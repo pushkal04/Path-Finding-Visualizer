@@ -11,4 +11,4 @@
 - Further clicks will create barriers marked by black cells 
 - Right click to delete a cell 
 - Press down `D` to activate Dijkstra's algo 
-- Press down `A` to activate Dijkstra's algo 
+- Press down `A` to activate A* algo 
