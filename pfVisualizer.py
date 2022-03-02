@@ -1,11 +1,12 @@
 from tkinter.tix import ROW
 import pygame
 import math
+from collections import deque
 from queue import PriorityQueue
 
 WIDTH = 800
 WIN  = pygame.display.set_mode((WIDTH, WIDTH))
-pygame.display.set_caption('Path finding algo (A*)')
+pygame.display.set_caption('Path finding algo (A*(a) and Dijkstra(d))')
 
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -137,6 +138,32 @@ def reconstruct_path(came_from, current, draw):
         current.make_path()
         draw()
 
+def dijkstra(draw, grid, start, end):
+    came_from = {}
+    queue, visited = deque(), []
+
+    queue.append(start)
+    visited.append(start)
+
+    while len(queue) > 0:
+        current = queue.popleft()
+        if current == end:
+            reconstruct_path(came_from, end, draw)
+            end.make_end()
+            return True
+
+        for neighbor in current.neighbors:
+            if neighbor not in visited:
+                visited.append(neighbor)
+                came_from[neighbor] = current
+                queue.append(neighbor)
+                neighbor.make_open()
+        draw()
+        if current != start:
+            current.make_closed()
+
+    return False
+
 
 def aStarAlgorithm(draw, grid, start, end):
     count = 0
@@ -225,12 +252,22 @@ def main(win, width):
                     end = None
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and start and end:
+                if event.key == pygame.K_a and start and end:
                     for row in grid:
                         for spot in row:
                             spot.update_neigbors(grid)
 
                     aStarAlgorithm(lambda: draw(win, grid, ROWS, width), grid, start, end)
+                    #dijkstra(lambda: draw(win, grid, ROWS, width), grid, start, end)
+                
+                if event.key == pygame.K_d and start and end:
+                    for row in grid:
+                        for spot in row:
+                            spot.update_neigbors(grid)
+
+                    #aStarAlgorithm(lambda: draw(win, grid, ROWS, width), grid, start, end)
+                    dijkstra(lambda: draw(win, grid, ROWS, width), grid, start, end)
+                    
                 if event.key == pygame.K_c:
                     start = None
                     end = None
